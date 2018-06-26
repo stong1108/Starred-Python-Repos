@@ -5,7 +5,6 @@ from pandas.io.sql import read_sql
 import pandas as pd
 import pymysql, json, get_most_starred
 
-
 app = Flask(__name__)
 
 # Connecting to MySQL
