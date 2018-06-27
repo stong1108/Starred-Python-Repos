@@ -4,6 +4,7 @@ from datetime import datetime
 from pandas.io.sql import read_sql
 import pandas as pd
 import pymysql, json, get_most_starred
+pd.set_option('display.max_colwidth', -1)
 
 app = Flask(__name__)
 
@@ -20,7 +21,7 @@ def format_parent_child(df):
     child_cols = ['repository_ID', 'URL', 'created_date', 'last_push_date']
     child_cols_display = ['Repository ID', 'URL', 'Created Date', 'Last Push Date']
 
-    html_string = df[desired_cols].to_html(classes='table table-striped display responsive" style="white-space:wrap; overflow:visible;" id="a_nice_table', index=False, border=0)
+    html_string = df[desired_cols].to_html(classes='table table-striped display responsive" id="a_nice_table', index=False, border=0)
     for i, colname in enumerate(parent_cols):
         html_string = html_string.replace('<th>{}</th>'.format(colname), '<th class="all">{}</th>'.format(parent_cols_display[i]))
     for i, colname in enumerate(child_cols):
@@ -33,7 +34,7 @@ def index():
     conn = engine.connect()
     df = read_sql('SELECT * FROM starred;', conn)
     conn.close()
-    return render_template('index.html', last_refresh_date=df['table_entry_dt'].max(), my_table=format_parent_child(df))
+    return render_template('index.html', last_refresh_date=datetime.strftime(df['table_entry_dt'].max(), '%a, %d %b %Y %H:%M:%S GMT'), my_table=format_parent_child(df))
 
 @app.route('/_refresh_table')
 def refresh_table():
